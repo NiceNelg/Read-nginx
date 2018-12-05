@@ -1,0 +1,738 @@
+
+
+----------------------------------------
+checking for C compiler
+
+
+----------------------------------------
+checking for gcc -pipe switch
+
+
+----------------------------------------
+checking for gcc builtin atomic operations
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+
+
+
+int main() {
+    long  n = 0;
+                      if (!__sync_bool_compare_and_swap(&n, 0, 1))
+                          return 1;
+                      if (__sync_fetch_and_add(&n, 1) != 1)
+                          return 1;
+                      if (n != 2)
+                          return 1;
+                      __sync_synchronize();;
+    return 0;
+}
+
+----------
+gcc -g -00 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for C99 variadic macros
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+
+#include <stdio.h>
+#define var(dummy, ...)  sprintf(__VA_ARGS__)
+
+int main() {
+    char  buf[30]; buf[0] = '0';
+                          var(0, buf, "%d", 1);
+                          if (buf[0] != '1') return 1;
+    return 0;
+}
+
+----------
+gcc -g -00 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for gcc variadic macros
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+
+#include <stdio.h>
+#define var(dummy, args...)  sprintf(args)
+
+int main() {
+    char  buf[30]; buf[0] = '0';
+                      var(0, buf, "%d", 1);
+                      if (buf[0] != '1') return 1;
+    return 0;
+}
+
+----------
+gcc -g -00 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for unistd.h
+
+
+----------------------------------------
+checking for inttypes.h
+
+
+----------------------------------------
+checking for limits.h
+
+
+----------------------------------------
+checking for sys/filio.h
+
+objs/autotest.c:3:23: fatal error: sys/filio.h: 没有那个文件或目录
+ #include <sys/filio.h>
+                       ^
+compilation terminated.
+----------
+
+
+#include <sys/filio.h>
+
+int main() {
+    return 0;
+}
+
+----------
+gcc -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for sys/param.h
+
+
+----------------------------------------
+checking for sys/mount.h
+
+
+----------------------------------------
+checking for sys/statvfs.h
+
+
+----------------------------------------
+checking for crypt.h
+
+
+----------------------------------------
+checking for epoll
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/epoll.h>
+
+int main() {
+    int efd = 0;
+                  struct epoll_event ee;
+                  ee.events = EPOLLIN|EPOLLOUT|EPOLLET;
+                  ee.data.ptr = NULL;
+                  efd = epoll_create(100);
+                  if (efd == -1) return 1;;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for sendfile()
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/sendfile.h>
+                  #include <errno.h>
+
+int main() {
+    int s = 0, fd = 1;
+                  ssize_t n; off_t off = 0;
+                  n = sendfile(s, fd, &off, 1);
+                  if (n == -1 && errno == ENOSYS) return 1;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for sendfile64()
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/sendfile.h>
+                  #include <errno.h>
+
+int main() {
+    int s = 0, fd = 1;
+                  ssize_t n; off_t off = 0;
+                  n = sendfile(s, fd, &off, 1);
+                  if (n == -1 && errno == ENOSYS) return 1;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for sys/prctl.h
+
+
+----------------------------------------
+checking for prctl(PR_SET_DUMPABLE)
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/prctl.h>
+
+int main() {
+    if (prctl(PR_SET_DUMPABLE, 1, 0, 0, 0) == -1) return 1;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for sched_setaffinity()
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sched.h>
+
+int main() {
+    cpu_set_t mask;
+                  CPU_ZERO(&mask);
+                  sched_setaffinity(0, sizeof(cpu_set_t), &mask);
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for crypt_r()
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <crypt.h>
+
+int main() {
+    struct crypt_data  cd;
+                  crypt_r("key", "salt", &cd);;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c -lcrypt
+----------
+
+----------------------------------------
+checking for sys/vfs.h
+
+
+----------------------------------------
+checking for poll()
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <poll.h>
+
+int main() {
+    int  n; struct pollfd  pl;
+                  pl.fd = 0;
+                  pl.events = 0;
+                  pl.revents = 0;
+                  n = poll(&pl, 1, 0);
+                  if (n == -1) return 1;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for /dev/poll
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/devpoll.h>
+
+int main() {
+    int  n, dp; struct dvpoll  dvp;
+                  dp = 0;
+                  dvp.dp_fds = NULL;
+                  dvp.dp_nfds = 0;
+                  dvp.dp_timeout = 0;
+                  n = ioctl(dp, DP_POLL, &dvp);
+                  if (n == -1) return 1;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for kqueue
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/event.h>
+
+int main() {
+    int kq; kq = kqueue();
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for crypt()
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+
+
+int main() {
+    crypt("test", "salt");;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for crypt() in libcrypt
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+
+
+int main() {
+    crypt("test", "salt");;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c -lcrypt
+----------
+
+----------------------------------------
+checking for F_READAHEAD
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+int main() {
+    fcntl(0, F_READAHEAD, 1);;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for posix_fadvise()
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+int main() {
+    posix_fadvise(0, 0, 0, POSIX_FADV_SEQUENTIAL);;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for O_DIRECT
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+int main() {
+    fcntl(0, F_SETFL, O_DIRECT);;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for F_NOCACHE
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+int main() {
+    fcntl(0, F_NOCACHE, 1);;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for directio()
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/types.h>
+                  #include <sys/fcntl.h>
+
+int main() {
+    directio(0, DIRECTIO_ON);;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for statfs()
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/param.h>
+                  #include <sys/mount.h>
+                  #include <sys/vfs.h>
+
+int main() {
+    struct statfs  fs;
+                  statfs(".", &fs);;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for statvfs()
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/types.h>
+                  #include <sys/statvfs.h>
+
+int main() {
+    struct statvfs  fs;
+                  statvfs(".", &fs);;
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for dlopen()
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <dlfcn.h>
+
+int main() {
+    dlopen(NULL, 0);
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for dlopen() in libdl
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <dlfcn.h>
+
+int main() {
+    dlopen(NULL, 0);
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c -ldl
+----------
+
+----------------------------------------
+checking for sched_yield()
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sched.h>
+
+int main() {
+    sched_yield();
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for sched_yield() in librt
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sched.h>
+
+int main() {
+    sched_yield();
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c -lrt
+----------
+
+----------------------------------------
+checking for SO_SETFIB
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/socket.h>
+
+int main() {
+    setsockopt(0, SOL_SOCKET, SO_SETFIB, NULL, 4);
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for SO_ACCEPTFILTER
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/socket.h>
+
+int main() {
+    setsockopt(0, SOL_SOCKET, SO_ACCEPTFILTER, NULL, 0);
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for TCP_DEFER_ACCEPT
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/socket.h>
+                  #include <netinet/in.h>
+                  #include <netinet/tcp.h>
+
+int main() {
+    setsockopt(0, IPPROTO_TCP, TCP_DEFER_ACCEPT, NULL, 0);
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for TCP_KEEPIDLE, TCP_KEEPINTVL, TCP_KEEPCNT
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/socket.h>
+                  #include <netinet/in.h>
+                  #include <netinet/tcp.h>
+
+int main() {
+    setsockopt(0, IPPROTO_TCP, TCP_KEEPIDLE, NULL, 0);
+                  setsockopt(0, IPPROTO_TCP, TCP_KEEPINTVL, NULL, 0);
+                  setsockopt(0, IPPROTO_TCP, TCP_KEEPCNT, NULL, 0);
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for TCP_INFO
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/socket.h>
+                  #include <netinet/in.h>
+                  #include <netinet/tcp.h>
+
+int main() {
+    socklen_t optlen = sizeof(struct tcp_info);
+                  struct tcp_info ti;
+                  ti.tcpi_rtt = 0;
+                  ti.tcpi_rttvar = 0;
+                  ti.tcpi_snd_cwnd = 0;
+                  ti.tcpi_rcv_space = 0;
+                  getsockopt(0, IPPROTO_TCP, TCP_INFO, &ti, &optlen);
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for accept4()
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/socket.h>
+
+int main() {
+    accept4(0, NULL, NULL, SOCK_NONBLOCK);
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
+
+----------------------------------------
+checking for int size
+
+gcc: error: unrecognized command line option ‘-00’
+----------
+
+#include <sys/types.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <signal.h>
+#include <stdio.h>
+#include <sys/resource.h>
+#include <inttypes.h>
+
+
+int main() {
+    printf("%d", (int) sizeof(int));
+    return 0;
+}
+
+----------
+gcc -g -00 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -o objs/autotest objs/autotest.c
+----------
