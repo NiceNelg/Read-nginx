@@ -20,29 +20,31 @@ ngx_create_pool(size_t size, ngx_log_t *log)
 {
     ngx_pool_t  *p;
 
-    //分配内存
+    /*分配内存
     p = ngx_memalign(NGX_POOL_ALIGNMENT, size, log);
     if (p == NULL) {
         return NULL;
     }
 
-    //内存池的可用内存起始位，（即：减去结构体所占数据位置后的空闲空间）
+    /*内存池的可用内存起始位，（即：减去结构体所占数据位置后的空闲空间）*/
     p->d.last = (u_char *) p + sizeof(ngx_pool_t);
-    //内存池的结束地址
+    /*内存池的结束地址*/
     p->d.end = (u_char *) p + size;
-    //下个内存池
+    /*下个内存池*/
     p->d.next = NULL;
-    //失败次数
+    /*失败次数*/
     p->d.failed = 0;
 
-    //计算内存池可用的内存空间大小
+    /*计算内存池可用的内存空间大小*/
     size = size - sizeof(ngx_pool_t);
-    //记录可分配的内存空间大小(即剩余可用内存大小)
+    /*记录可分配的内存空间大小(即剩余可用内存大小)*/
     p->max = (size < NGX_MAX_ALLOC_FROM_POOL) ? size : NGX_MAX_ALLOC_FROM_POOL;
 
-    //记录当前内存池的起始位置
-    //只有缓存池的父节点，才会用到下面的这些  ，子节点只挂载在p->d.next,
-    //并且只负责p->d的数据内容
+    /*
+     * 记录当前内存池的起始位置
+     * 只有缓存池的父节点，才会用到下面的这些  ，子节点只挂载在p->d.next,
+     * 并且只负责p->d的数据内容
+     */
     p->current = p;
     p->chain = NULL;
     p->large = NULL;
@@ -63,18 +65,18 @@ ngx_destroy_pool(ngx_pool_t *pool)
     ngx_pool_large_t    *l;
     ngx_pool_cleanup_t  *c;
 
-    //先清除pool->cleanup链表
+    /*先清除pool->cleanup链表*/
     for (c = pool->cleanup; c; c = c->next) {
-        //判断有没有清除改区域的回调函数
+        /*判断有没有清除改区域的回调函数*/
         if (c->handler) {
             ngx_log_debug1(NGX_LOG_DEBUG_ALLOC, pool->log, 0,
                            "run cleanup: %p", c);
-            //调用回调函数清理数据
+            /*调用回调函数清理数据*/
             c->handler(c->data);
         }
     }
 
-    //清除大块内存的数据
+    /*清除大块内存的数据*/
     for (l = pool->large; l; l = l->next) {
 
         ngx_log_debug1(NGX_LOG_DEBUG_ALLOC, pool->log, 0, "free: %p", l->alloc);
@@ -102,7 +104,7 @@ ngx_destroy_pool(ngx_pool_t *pool)
 
 #endif
 
-    //对内存池的data数据区域进行释放
+    /*对内存池的data数据区域进行释放*/
     for (p = pool, n = pool->d.next; /* void */; p = n, n = n->d.next) {
         ngx_free(p);
 
@@ -144,20 +146,24 @@ ngx_palloc(ngx_pool_t *pool, size_t size)
     u_char      *m;
     ngx_pool_t  *p;
 
-    //当需要分配的内存少于可分配内存大小时,
-    //若超出可分配内存大小则走大数据内存分配
+    /*
+     * 当需要分配的内存少于可分配内存大小时,
+     * 若超出可分配内存大小则走大数据内存分配
+     */
     if (size <= pool->max) {
 
-        //获取当前内存池节点
+        /*获取当前内存池节点*/
         p = pool->current;
 
         do {
-            //对齐操作,计算指针的内存地址，会损失内存，但是提高内存使用速度
+            /*对齐操作,计算指针的内存地址，会损失内存，但是提高内存使用速度*/
             m = ngx_align_ptr(p->d.last, NGX_ALIGNMENT);
 
-            //判断新分配的指针m的内存地址+需要分配的内存大小是否超过该
-            //内存池节点的结束地址，若超过则代表该内存池节点的结束地址则代表
-            //该节点不能分配所需内存空间的大小
+            /*
+             * 判断新分配的指针m的内存地址+需要分配的内存大小是否超过该
+             * 内存池节点的结束地址，若超过则代表该内存池节点的结束地址则代表
+             * 该节点不能分配所需内存空间的大小
+             */
             if ((size_t) (p->d.end - m) >= size) {
                 p->d.last = m + size;
 
@@ -168,8 +174,10 @@ ngx_palloc(ngx_pool_t *pool, size_t size)
 
         } while (p);
 
-        //如果没有内存池节点可以容纳大小为size的内存块，
-        //则需要重新申请一个内存池节点
+        /*
+         * 如果没有内存池节点可以容纳大小为size的内存块，
+         * 则需要重新申请一个内存池节点
+         */
         return ngx_palloc_block(pool, size);
     }
 
@@ -216,10 +224,10 @@ ngx_palloc_block(ngx_pool_t *pool, size_t size)
     size_t       psize;
     ngx_pool_t  *p, *new, *current;
 
-    //计算当前内存池节点的大小
+    /*计算当前内存池节点的大小*/
     psize = (size_t) (pool->d.end - (u_char *) pool);
 
-    //分配新的内存池节点内存空间
+    /*分配新的内存池节点内存空间*/
     m = ngx_memalign(NGX_POOL_ALIGNMENT, psize, pool->log);
     if (m == NULL) {
         return NULL;
@@ -237,14 +245,16 @@ ngx_palloc_block(ngx_pool_t *pool, size_t size)
 
     current = pool->current;
     
-	//内存池的数据结构会挂载到节点的ngx_pool_t数据结构
-	//子节点的ngx_pool_t数据结构中只用到pool->d的结构，只保存数据
-	//每添加一个子节点，p->d.failed就会+1，当添加超过4个子节点的时候，
-	//pool->current会指向到pool->current的下一个子节点地址
-	//这个逻辑主要是为了防止pool上的子节点过多，
-    //导致每次ngx_palloc循环全部pool的子节点
-    //将pool->current设置成新的子节点之后，
-    //每次最大循环4次，不会去遍历整个缓存池链表
+	/*
+     * 内存池的数据结构会挂载到节点的ngx_pool_t数据结构
+     * 子节点的ngx_pool_t数据结构中只用到pool->d的结构，只保存数据
+     * 每添加一个子节点，p->d.failed就会+1，当添加超过4个子节点的时候，
+     * pool->current会指向到pool->current的下一个子节点地址
+     * 这个逻辑主要是为了防止pool上的子节点过多，
+     * 导致每次ngx_palloc循环全部pool的子节点
+     * 将pool->current设置成新的子节点之后，
+     * 每次最大循环4次，不会去遍历整个缓存池链表
+     */
     for (p = current; p->d.next; p = p->d.next) {
         if (p->d.failed++ > 4) {
             current = p->d.next;
@@ -276,7 +286,7 @@ ngx_palloc_large(ngx_pool_t *pool, size_t size)
 
     n = 0;
 
-    //若内存池中有空的大块内存节点则存放
+    /*若内存池中有空的大块内存节点则存放*/
     for (large = pool->large; large; large = large->next) {
         if (large->alloc == NULL) {
             large->alloc = p;
@@ -288,7 +298,7 @@ ngx_palloc_large(ngx_pool_t *pool, size_t size)
         }
     }
 
-    //分配一个ngx_pool_large_t数据结构（将节点数据放到内存池节点中）
+    /*分配一个ngx_pool_large_t数据结构（将节点数据放到内存池节点中）*/
     large = ngx_palloc(pool, sizeof(ngx_pool_large_t));
     if (large == NULL) {
         ngx_free(p);
